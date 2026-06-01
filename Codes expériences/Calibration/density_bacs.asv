@@ -20,14 +20,11 @@ buckets methods.
 % position : describe how we fill the tank: 'bottom' or 'top'
 
 % RETURNS
-% h = height of water that we need in each water bucket
-% rho_tank = density in the saltwater bucket
-% rho_min = minimum density in the tank
-% rho_max = maximum density in the tank
+% h = height of water that we need in each water tank
+% rho_tank = density in the saltwater b
+% rho_min = minimum 
 
 
-l_bucket = 53; % lenght of the bucket 
-w_bucket = 33; % width of the bucket 
 rho_water = 998;
 %V_lost = y.h_lost*60*60;  % volume that remains below the propeller
 V_tot = H*L*W;
@@ -35,10 +32,10 @@ r=V_lost/(V_tot/2+V_lost);
 g=9.81;                   % pesanteur
 s=1/(g/(N*N*H*0.01)+0.5); % coefficient used to calculate the variation in 
 t=1/(g/(N*N*H*0.01)-0.5); % the tank knowing N and H
-y.h = V_tot/(2*l_bucket*w_bucket) ; % height of water that we need in each water tank
+%y.h = V_tot/(2*53*33) ;   % height of water that we need in each water tank
 
 
-%y.h = V_tot/(2*1000) ;   % height of water that we need in each water tank
+y.h = V_tot/(2*1000) ;   % height of water that we need in each water tank
 
 switch position
 
