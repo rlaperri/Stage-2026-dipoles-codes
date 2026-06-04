@@ -3,7 +3,7 @@
 """
 Created on Thu Jun  4 08:39:50 2026
 
-@author: robinou
+@author: Robin Laperrière
 
 À partir des paramètres d'injection, calcule le nombre de Reynolds du 
 Vortex grâce aux paramètres d'injection et la formule trouvée par 
