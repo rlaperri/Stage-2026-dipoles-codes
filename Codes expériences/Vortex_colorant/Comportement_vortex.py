@@ -42,7 +42,7 @@ Les résultats des expériences sont donnés par :
 
 ## 2 Juin 2026
 Parametres_0206 = np.array([[10,5], [10,5], [20,1], [20,10], [50,5], [5,10]])
-Comportement_0206 = np.array(["Pb_hauteur", "Pb_hauteur", "Nvdp_pas_dp", "Nvdp_pas_dp", 
+Comportement_0206 = np.array(["Pb_hauteur", "Pb_hauteur", "Pb_hauteur", "Nvdp_pas_dp", "Nvdp_pas_dp", 
                      "Pas_col_dp"])
 
 ## 3 Juin 2026 
@@ -60,25 +60,90 @@ Comportement_0306 = np.array([None, "Pas_col_dp", "Pas_col_dp", "Pas_col_dp", No
                      "Dev_dp", "Dev_dp", "Nvdp_dp", "Nvdp_dp", "Nvdp_dp"])
 i_recul_injecteur = 19 # Expérience à partir de laquelle on a reculé l'injecteur
 
+# Résultats pour l'injecteur placé à la position initiale (2 juin et 3 juin matin)
+
+plt.figure(figsize = (8,4))
+
+## Résultats au 2 Juin
+
+L_Pas_col_dp = np.where(Comportement_0206 == "Pas_col_dp")[0]
+plt.scatter(Parametres_0206[L_Pas_col_dp][:,0], 
+         Parametres_0206[L_Pas_col_dp][:,1], 
+         label = "Dipôles formés, pas de collision", color = 'blue')
+
+L_Dev_dp = np.where(Comportement_0206 == "Dev_dp")[0]
+plt.scatter(Parametres_0206[L_Dev_dp][:,0], 
+         Parametres_0206[L_Dev_dp][:,1], 
+         label = "Dipôles formés et deviés", color = 'green')
+
+L_Nvdp_dp = np.where(Comportement_0206 == "Nvdp_dp")[0]
+plt.scatter(Parametres_0206[L_Nvdp_dp][:,0], 
+         Parametres_0206[L_Nvdp_dp][:,1], 
+         label = "Dipôles formés, collision et nouveaux dipôles", color = 'orange')
+
+L_Nvdp_pas_dp = np.where(Comportement_0206 == "Nvdp_pas_dp")[0]
+plt.scatter(Parametres_0206[L_Nvdp_pas_dp][:,0], 
+         Parametres_0206[L_Nvdp_pas_dp][:,1], 
+         label = "Dipôles pas formés, collision et nouveaux dipôles", color = 'red')
+
+## Résultats au 3 Juin
+
+L_Pas_col_dp = np.where(Comportement_0306[:i_recul_injecteur] == "Pas_col_dp")[0]
+plt.scatter(Parametres_0306[L_Pas_col_dp][:,0], 
+         Parametres_0306[L_Pas_col_dp][:,1], 
+         color = 'blue')
+
+L_Dev_dp = np.where(Comportement_0306[:i_recul_injecteur] == "Dev_dp")[0]
+plt.scatter(Parametres_0306[L_Dev_dp][:,0], 
+         Parametres_0306[L_Dev_dp][:,1], 
+         color = 'green')
+
+L_Nvdp_dp = np.where(Comportement_0306[:i_recul_injecteur] == "Nvdp_dp")[0]
+plt.scatter(Parametres_0306[L_Nvdp_dp][:,0], 
+         Parametres_0306[L_Nvdp_dp][:,1], 
+         color = 'orange')
+
+L_Nvdp_pas_dp = np.where(Comportement_0306[:i_recul_injecteur] == "Nvdp_pas_dp")[0]
+plt.scatter(Parametres_0306[L_Nvdp_pas_dp][:,0], 
+         Parametres_0306[L_Nvdp_pas_dp][:,1], 
+         color = 'red')
+
+## Plot
+
+plt.grid()
+plt.xlabel(r'$Q$ (mL/min)', size = 13)
+plt.ylabel(r'$\delta t$ (s)', size = 13)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.legend(fontsize = 10)
+plt.title("Résultats pour la seringue en position intiale (2 et 3 juin)")
+plt.show()
+
 # Resultats pour l'injecteur reculé au max (au 3 juin)
 
 plt.figure(figsize = (8,4))
 
 L_Pas_col_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Pas_col_dp")[0] + i_recul_injecteur
 plt.scatter(Parametres_0306[L_Pas_col_dp][:,0], 
-         Parametres_0306[L_Pas_col_dp][:,1], label = "Dipôles formés, pas de collision")
+         Parametres_0306[L_Pas_col_dp][:,1], 
+         label = "Dipôles formés, pas de collision", color = 'blue')
 
 L_Dev_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Dev_dp")[0] + i_recul_injecteur
 plt.scatter(Parametres_0306[L_Dev_dp][:,0], 
-         Parametres_0306[L_Dev_dp][:,1], label = "Dipôles formés et deviés")
+         Parametres_0306[L_Dev_dp][:,1], 
+         label = "Dipôles formés et deviés", color = 'green')
 
 L_Nvdp_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Nvdp_dp")[0] + i_recul_injecteur
 plt.scatter(Parametres_0306[L_Nvdp_dp][:,0], 
-         Parametres_0306[L_Nvdp_dp][:,1], label = "Dipôles formés, collision et nouveaux dipôles")
+         Parametres_0306[L_Nvdp_dp][:,1], 
+         label = "Dipôles formés, collision et nouveaux dipôles", color = 'orange')
 
 L_Nvdp_pas_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Nvdp_pas_dp")[0] + i_recul_injecteur
 plt.scatter(Parametres_0306[L_Nvdp_pas_dp][:,0], 
-         Parametres_0306[L_Nvdp_pas_dp][:,1], label = "Dipôles pas formés, collision et nouveaux dipôles")
+         Parametres_0306[L_Nvdp_pas_dp][:,1], 
+         label = "Dipôles pas formés, collision et nouveaux dipôles", color = 'red')
+
+## Plot
 
 plt.grid()
 plt.xlabel(r'$Q$ (mL/min)', size = 13)
