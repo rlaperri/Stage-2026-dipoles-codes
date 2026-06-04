@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 27 13:45:07 2026
+Created on Tue Jun  2 12:36:20 2026
 
 @author: Robin Laperrière
-
-Calibration de la sonde conductimétrique du 27 mai 2026
+Calibration de la sonde conductimétrique du 2 Juin 2026
 """
 
 # Librairies
@@ -19,19 +18,16 @@ from scipy.optimize import curve_fit
 ## conductivité
 
 '''
-Mesurée par la sonde (voir cahier de labo). Une première incertitude
-est estimée sur chaque mesure avec les fluctuation observées. 
+Mesurée par la sonde (voir cahier de labo). 
 
 L'appareil a une precision jusqu'au µS/cm, donc l'incertitude 
 appareil peut être négligée ici.
 '''
 
-sigma = np.array([95.45, 92.92, 90.8, 86.5, 81.6, 77.2, 73.5, 69.55, 
-                  67.4, 61.6, 53.6, 48.3, 42.9, 31.05, 25.23, 20.49,
-                  11.28, 7.88, 1.47, 0.2, 0]) #mS/cm
-u_sigma_exp = np.array([0.1, 0, 0.05, 1, 0.2, 0.2, 0.2, 0.05, 0.2, 
-                        0.2, 0.1, 0.1, 0, 0.1, 0.1, 0.1, 0.1, 0.1, 
-                        0.1,0.5, 0]) #mS/cm
+sigma = np.array([96.86, 95.80, 94.55, 92.83, 90.53, 88.24, 86.00, 82.98,
+                  79.58, 74.73, 69.28, 65.72, 57.57, 52.57, 46.20, 40.57, 
+                  27.50, 20.22, 14.51, 11.02, 6.29, 1.95, 0.28]) #mS/cm
+
 
 
 ## Densité
@@ -40,9 +36,9 @@ u_sigma_exp = np.array([0.1, 0, 0.05, 1, 0.2, 0.2, 0.2, 0.05, 0.2,
 Mesurée par le densimètre (voir cahier de labo)
 '''
 
-rho = np.array([1.1740, 1.1609, 1.1517, 1.1365, 1.1233, 1.1114, 1.1036, 
-                1.0948, 1.0905, 1.0799, 1.0647, 1.0572, 1.0492, 1.0322, 
-                1.0251, 1.0185, 1.0095, 1.0041, 0.9994, 0.9983, 0.998]) #g/cm3
+rho = np.array([1.1941, 1.1820, 1.1734, 1.1642, 1.1546, 1.1456, 1.1375, 1.1277,
+                1.1186, 1.1063, 1.0950, 1.0877, 1.0724, 1.0640, 1.0539, 1.0455,
+                1.0278, 1.0188, 1.0122, 1.009, 1.0040, 0.9995, 0.9977]) #g/cm3
 u_rho_appareil = 0.001  #g/cm3, sur la notice
 
 # Fit avec un polynome d'ordre 2
@@ -57,13 +53,12 @@ a,b = popt
 # Graphique
 
 plt.figure(figsize = (8,4))
-plt.errorbar(x = sigma, y = rho, xerr = u_sigma_exp, yerr = u_rho_appareil, 
+plt.errorbar(x = sigma, y = rho, yerr = u_rho_appareil, 
              linestyle = '', marker = 'x', color = 'indigo', markersize = 8,
              label = 'Données expérimentales')
 
 plt.plot(sigma, polynome_deg2(sigma, a,b), label = 'Régression', color = 'blue', 
          linestyle = 'dashed')
-
 
 plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)

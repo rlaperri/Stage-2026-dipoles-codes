@@ -4,10 +4,12 @@
 """
 Created on Mon Jun  1 16:47:12 2026
 
-@author: robinou
+@author: Robin Laperrière 
 
 Mesure de la stratification faite le 1 Juin 2026
 après avoir rempli la cuve
+
+MESURES FAUSSES, VIDANGE DE TORICELLI
 """
 
 import numpy as np
@@ -41,7 +43,8 @@ N = np.sqrt(-(a1*9.81)/998)
 
 plt.figure(figsize = (8,4))
 
-plt.scatter(rho, z, color = 'indigo', marker = 'x', s = 60)
+plt.scatter(rho, z, color = 'indigo', marker = 'x', s = 60, label = 'mesures')
+
 
 plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
@@ -50,6 +53,6 @@ plt.xlabel(r'$\rho \, (kg/m^3)$', size = 13)
 plt.ylabel(r'$z \, (cm)$', size = 13)
 plt.grid()
 
-plt.title(r"Stratification du 1 Juin 2026, $N \approx {:.2f}$ rad/s".format(N), 
+plt.title(r"Stratification du 1 Juin 2026 (mesures fausses), $N \approx {:.2f}$ rad/s".format(N), 
           size = 16)
 plt.show()
