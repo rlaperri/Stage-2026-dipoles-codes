@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jun  2 10:21:57 2026
+Created on Mon Jun  8 11:02:04 2026
 
-@author: Robin Laperrière
+@author: Robin LAPERRIÈRE
 
-Mesure de la stratification faite le 1 Juin 2026
-après avoir rempli la cuve. On remesure le 2 Juin 
-à cause d'un problème de vidange de la cuve
+Evolution de la stratification de la deuxième semaine
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
-
 # Graduations notées sur le tube en PVC (en cm)
-z_graduation = np.arange(25,0,-1) 
+z_graduation = np.arange(24,0,-1) 
 z_graduation = np.append(z_graduation, 0.4)
 
 # Offset du l'écart cellules-bout de la sonde
@@ -23,9 +20,10 @@ z = z_graduation + 0.9
 
 # Mesures de conductimétrie (mS/cm), incertitudes faibles
 
-sigma = np.array([0.01, 2.93, 9.70, 11.61, 15.27, 18.16, 21.41, 24.89, 27.98,
-                  30.88, 33.94, 36.69, 39.52, 41.99, 44.48, 46.80, 48.87, 51.06,
-                  52.83, 54.47, 56.25, 57.85, 59.40, 60.83, 62.23, 63.02])
+sigma = np.array([0.01, 19.18, 19.26, 20.06, 21.29, 23.40, 25.77, 
+                  28.20, 30.69, 33.60, 36.30, 38.68, 41.14, 43.30, 
+                  45.71, 47.96, 49.84, 51.71, 53.29, 54.96, 56.46, 
+                  57.68, 58.59, 59.28, 59.72])
 
 # Conversion en densité
 
@@ -50,10 +48,15 @@ rho  = calcul_rho(sigma)
 
 # Calcul de la fréquence de Brunt-Väisälä
 
-[a1,a0], cov = np.polyfit(z[2:-2]*1e-2, rho[2:-2], deg = 1, cov = True) 
+[a1,a0], cov = np.polyfit(z[3:-3]*1e-2, rho[3:-3], deg = 1, cov = True) 
 u_a1 = cov[1,1]
 
-# On exclut les trois premiers et deux derniers points
+'''
+On exclut les quatre premiers et trois derniers points : 
+    - Effets de la couche de mélange en surface
+    - Effets du remplissage en profondeur
+'''
+
 N = np.sqrt(-(a1*9.81)/998)
 u_N = np.sqrt((u_a1*9.81)/998)
 
@@ -75,7 +78,7 @@ plt.ylabel(r'$z \, (cm)$', size = 13)
 plt.grid()
 
 plt.legend(fontsize = 14)
-plt.title(r"Stratification du 2 Juin 2026, $N \approx {:.2f} \pm {:.2f} $ rad/s".format(N, u_N), 
+plt.title(r"Stratification du 8 Juin 2026, $N \approx {:.2f} \pm {:.2f} $ rad/s".format(N, u_N), 
           size = 16)
 plt.show()
 

@@ -15,7 +15,7 @@ comportement des vortex
 import numpy as np
 import matplotlib.pyplot as plt
 
-#Liste des expériences faites (indexées par les fichiers mov)
+#Liste des expériences faites
 
 '''
 Les résultats des expériences sont donnés par : 
@@ -60,6 +60,25 @@ Comportement_0306 = np.array([None, "Pas_col_dp", "Pas_col_dp", "Pas_col_dp", No
                      "Dev_dp", "Dev_dp", "Nvdp_dp", "Nvdp_dp", "Nvdp_dp"])
 i_recul_injecteur = 19 # Expérience à partir de laquelle on a reculé l'injecteur
 
+## 4 Juin
+
+Parametres_0406 = np.array([[None, None], [20,6], [20,8], [40,4], [40,4.5], 
+                            [50,3], [50,4], [50,5], [50,4.5], [50, 4.3], [50,2.5],
+                            [50,3.5], [60,3], [60,2], [60, 2.5], [60,1], [60, 1.5]])
+Comportement_0406 = np.array([None, "Nvdp_dp", "Nvdp_dp", "Nvdp_dp", "Nvdp_dp",
+                             "Nvdp_pas_dp", "Nvdp_pas_dp", "Nvdp_pas_dp", 
+                             "Nvdp_pas_dp", "Nvdp_pas_dp", "Dev_dp", "Nvdp_pas_dp",
+                             "Nvdp_pas_dp", "Nvdp_pas_dp", "Nvdp_pas_dp",
+                             "Dev_dp", "Nvdp_dp"])
+
+## 5 Juin
+
+Parametres_0506 = np.array([[70,2], [70,1], [70,1.5], [70,3], [70,2], [80,2], 
+                            [80,1.5], [90,2], [90,3]])
+Comportement_0506 = np.array(["Nvdp_dp", "Dev_dp", "Col_dp", "Nvdp_pas_dp", 
+                              "Nvdp_pas_dp", "Nvdp_pas_dp", "Nvdp_pas_dp",
+                              "Nvdp_dp", "Nvdp_pas_dp"])
+
 # Résultats pour l'injecteur placé à la position initiale (2 juin et 3 juin matin)
 
 plt.figure(figsize = (8,4))
@@ -75,6 +94,11 @@ L_Dev_dp = np.where(Comportement_0206 == "Dev_dp")[0]
 plt.scatter(Parametres_0206[L_Dev_dp][:,0], 
          Parametres_0206[L_Dev_dp][:,1], 
          label = "Dipôles formés et deviés", color = 'green')
+
+L_Col_dp = np.where(Comportement_0206 == "Col_dp")[0]
+plt.scatter(Parametres_0206[L_Col_dp][:,0], 
+         Parametres_0206[L_Col_dp][:,1], 
+         label = "Dipôles formés collision", color = 'tab:olive')
 
 L_Nvdp_dp = np.where(Comportement_0206 == "Nvdp_dp")[0]
 plt.scatter(Parametres_0206[L_Nvdp_dp][:,0], 
@@ -98,6 +122,11 @@ plt.scatter(Parametres_0306[L_Dev_dp][:,0],
          Parametres_0306[L_Dev_dp][:,1], 
          color = 'green')
 
+L_Col_dp = np.where(Comportement_0306[:i_recul_injecteur] == "Col_dp")[0]
+plt.scatter(Parametres_0306[L_Col_dp][:,0], 
+         Parametres_0306[L_Col_dp][:,1], 
+         color = 'tab:olive')
+
 L_Nvdp_dp = np.where(Comportement_0306[:i_recul_injecteur] == "Nvdp_dp")[0]
 plt.scatter(Parametres_0306[L_Nvdp_dp][:,0], 
          Parametres_0306[L_Nvdp_dp][:,1], 
@@ -119,7 +148,9 @@ plt.legend(fontsize = 10)
 plt.title("Résultats pour la seringue en position intiale (2 et 3 juin)")
 plt.show()
 
-# Resultats pour l'injecteur reculé au max (au 3 juin)
+# Resultats pour l'injecteur reculé au max (au 3, 4 et 5 juin)
+
+## Résultats au 3 Juin
 
 plt.figure(figsize = (8,4))
 
@@ -133,6 +164,11 @@ plt.scatter(Parametres_0306[L_Dev_dp][:,0],
          Parametres_0306[L_Dev_dp][:,1], 
          label = "Dipôles formés et deviés", color = 'green')
 
+L_Col_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Col_dp")[0] + i_recul_injecteur
+plt.scatter(Parametres_0306[L_Col_dp][:,0], 
+         Parametres_0306[L_Col_dp][:,1], 
+         label = "Dipôles formés collision", color = 'tab:olive')
+
 L_Nvdp_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Nvdp_dp")[0] + i_recul_injecteur
 plt.scatter(Parametres_0306[L_Nvdp_dp][:,0], 
          Parametres_0306[L_Nvdp_dp][:,1], 
@@ -143,6 +179,60 @@ plt.scatter(Parametres_0306[L_Nvdp_pas_dp][:,0],
          Parametres_0306[L_Nvdp_pas_dp][:,1], 
          label = "Dipôles pas formés, collision et nouveaux dipôles", color = 'red')
 
+## Résultats au 4 Juin
+
+L_Pas_col_dp = np.where(Comportement_0406 == "Pas_col_dp")[0]
+plt.scatter(Parametres_0406[L_Pas_col_dp][:,0], 
+         Parametres_0406[L_Pas_col_dp][:,1], 
+         color = 'blue')
+
+L_Dev_dp = np.where(Comportement_0406 == "Dev_dp")[0]
+plt.scatter(Parametres_0406[L_Dev_dp][:,0], 
+         Parametres_0406[L_Dev_dp][:,1], 
+         color = 'green')
+
+L_Col_dp = np.where(Comportement_0406 == "Col_dp")[0]
+plt.scatter(Parametres_0406[L_Col_dp][:,0], 
+         Parametres_0406[L_Col_dp][:,1], 
+         color = 'tab:olive')
+
+L_Nvdp_dp = np.where(Comportement_0406 == "Nvdp_dp")[0]
+plt.scatter(Parametres_0406[L_Nvdp_dp][:,0], 
+         Parametres_0406[L_Nvdp_dp][:,1], 
+         color = 'orange')
+
+L_Nvdp_pas_dp = np.where(Comportement_0406 == "Nvdp_pas_dp")[0]
+plt.scatter(Parametres_0406[L_Nvdp_pas_dp][:,0], 
+         Parametres_0406[L_Nvdp_pas_dp][:,1], 
+         color = 'red')
+
+## Résultats au 5 Juin
+
+L_Pas_col_dp = np.where(Comportement_0506 == "Pas_col_dp")[0]
+plt.scatter(Parametres_0506[L_Pas_col_dp][:,0], 
+         Parametres_0506[L_Pas_col_dp][:,1], 
+         color = 'blue')
+
+L_Dev_dp = np.where(Comportement_0506 == "Dev_dp")[0]
+plt.scatter(Parametres_0506[L_Dev_dp][:,0], 
+         Parametres_0506[L_Dev_dp][:,1], 
+         color = 'green')
+
+L_Col_dp = np.where(Comportement_0506 == "Col_dp")[0]
+plt.scatter(Parametres_0506[L_Col_dp][:,0], 
+         Parametres_0506[L_Col_dp][:,1], 
+         color = 'tab:olive')
+
+L_Nvdp_dp = np.where(Comportement_0506 == "Nvdp_dp")[0]
+plt.scatter(Parametres_0506[L_Nvdp_dp][:,0], 
+         Parametres_0506[L_Nvdp_dp][:,1], 
+         color = 'orange')
+
+L_Nvdp_pas_dp = np.where(Comportement_0506 == "Nvdp_pas_dp")[0]
+plt.scatter(Parametres_0506[L_Nvdp_pas_dp][:,0], 
+         Parametres_0506[L_Nvdp_pas_dp][:,1], 
+         color = 'red')
+
 ## Plot
 
 plt.grid()
@@ -151,5 +241,5 @@ plt.ylabel(r'$\delta t$ (s)', size = 13)
 plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
 plt.legend(fontsize = 10)
-plt.title("Résultats au 3 juin pour la seringue écartée au max")
+plt.title("Résultats au 3, 4 et 5 juin pour la seringue écartée au max")
 plt.show()
