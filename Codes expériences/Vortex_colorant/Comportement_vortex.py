@@ -38,6 +38,10 @@ Les résultats des expériences sont donnés par :
         que le dipole initial n'a pas eu le temps de se former avant collision
         - "Nvdp_dp" signifie qu'on a bien un dipole qui a eu le temps de se forme
         et qu'on observe des nouveaux dipoles
+        - "Pas_nvdp_pas_dp" : signifie qu'on a une une collision d'un dipôle
+        pas formé et que ce dernier ne forme pas de nouveau dipôle
+        - "Col_jet" : signifie que on injecte encore du colorant quand la 
+        structure que l'on envoie arrive sur le mur
 '''
 
 ## 2 Juin 2026
@@ -74,10 +78,20 @@ Comportement_0406 = np.array([None, "Nvdp_dp", "Nvdp_dp", "Nvdp_dp", "Nvdp_dp",
 ## 5 Juin
 
 Parametres_0506 = np.array([[70,2], [70,1], [70,1.5], [70,3], [70,2], [80,2], 
-                            [80,1.5], [90,2], [90,3]])
+                            [80,1.5], [90,2], [90,3], [5,10], [20,1], [20,2],
+                            [20, 1.5],  [60,0.5], [80,0.4], [10,5], [80,0.625],
+                            [100,0.625], [115,0.625], [115,0.3], [115,0.1],
+                            [115,0.2], [11.5,2], [15,5], [5,15], [5,60], 
+                            [5,150]])
 Comportement_0506 = np.array(["Nvdp_dp", "Dev_dp", "Col_dp", "Nvdp_pas_dp", 
                               "Nvdp_pas_dp", "Nvdp_pas_dp", "Nvdp_pas_dp",
-                              "Nvdp_dp", "Nvdp_pas_dp"])
+                              "Nvdp_dp", "Nvdp_pas_dp", "Pas_nvdp_pas_dp",
+                              "Col_dp", "Pas_nvdp_pas_dp", "Pas_nvdp_pas_dp",
+                              None, "Pas_nvdp_pas_dp", "Nvdp_pas_dp", 
+                              "Nvdp_pas_dp", "Nvdp_pas_dp", "Nvdp_pas_dp",
+                              "Col_dp", None, None, "Pas_nvdp_pas_dp", 
+                              "Nvdp_pas_dp", "Col_jet", "Col_jet", "Col_jet"])
+i_rotation_cuve = 9 # Expérience à partir de laquelle on a changé l'orientation de la cuve
 
 # Résultats pour l'injecteur placé à la position initiale (2 juin et 3 juin matin)
 
@@ -98,7 +112,7 @@ plt.scatter(Parametres_0206[L_Dev_dp][:,0],
 L_Col_dp = np.where(Comportement_0206 == "Col_dp")[0]
 plt.scatter(Parametres_0206[L_Col_dp][:,0], 
          Parametres_0206[L_Col_dp][:,1], 
-         label = "Dipôles formés collision", color = 'tab:olive')
+         label = "Dipôles formés, collision seulement", color = 'tab:olive')
 
 L_Nvdp_dp = np.where(Comportement_0206 == "Nvdp_dp")[0]
 plt.scatter(Parametres_0206[L_Nvdp_dp][:,0], 
@@ -167,7 +181,7 @@ plt.scatter(Parametres_0306[L_Dev_dp][:,0],
 L_Col_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Col_dp")[0] + i_recul_injecteur
 plt.scatter(Parametres_0306[L_Col_dp][:,0], 
          Parametres_0306[L_Col_dp][:,1], 
-         label = "Dipôles formés collision", color = 'tab:olive')
+         label = "Dipôles formés, collision seulement", color = 'tab:olive')
 
 L_Nvdp_dp = np.where(Comportement_0306[i_recul_injecteur:] == "Nvdp_dp")[0] + i_recul_injecteur
 plt.scatter(Parametres_0306[L_Nvdp_dp][:,0], 
@@ -208,27 +222,27 @@ plt.scatter(Parametres_0406[L_Nvdp_pas_dp][:,0],
 
 ## Résultats au 5 Juin
 
-L_Pas_col_dp = np.where(Comportement_0506 == "Pas_col_dp")[0]
+L_Pas_col_dp = np.where(Comportement_0506[:i_rotation_cuve] == "Pas_col_dp")[0]
 plt.scatter(Parametres_0506[L_Pas_col_dp][:,0], 
          Parametres_0506[L_Pas_col_dp][:,1], 
          color = 'blue')
 
-L_Dev_dp = np.where(Comportement_0506 == "Dev_dp")[0]
+L_Dev_dp = np.where(Comportement_0506[:i_rotation_cuve] == "Dev_dp")[0]
 plt.scatter(Parametres_0506[L_Dev_dp][:,0], 
          Parametres_0506[L_Dev_dp][:,1], 
          color = 'green')
 
-L_Col_dp = np.where(Comportement_0506 == "Col_dp")[0]
+L_Col_dp = np.where(Comportement_0506[:i_rotation_cuve] == "Col_dp")[0]
 plt.scatter(Parametres_0506[L_Col_dp][:,0], 
          Parametres_0506[L_Col_dp][:,1], 
          color = 'tab:olive')
 
-L_Nvdp_dp = np.where(Comportement_0506 == "Nvdp_dp")[0]
+L_Nvdp_dp = np.where(Comportement_0506[:i_rotation_cuve] == "Nvdp_dp")[0]
 plt.scatter(Parametres_0506[L_Nvdp_dp][:,0], 
          Parametres_0506[L_Nvdp_dp][:,1], 
          color = 'orange')
 
-L_Nvdp_pas_dp = np.where(Comportement_0506 == "Nvdp_pas_dp")[0]
+L_Nvdp_pas_dp = np.where(Comportement_0506[:i_rotation_cuve]== "Nvdp_pas_dp")[0]
 plt.scatter(Parametres_0506[L_Nvdp_pas_dp][:,0], 
          Parametres_0506[L_Nvdp_pas_dp][:,1], 
          color = 'red')
@@ -242,4 +256,38 @@ plt.xticks(fontsize=12)
 plt.yticks(fontsize=12)
 plt.legend(fontsize = 10)
 plt.title("Résultats au 3, 4 et 5 juin pour la seringue écartée au max")
+plt.show()
+
+# Resultats pour la cuve tournée dans l'autre sens (5 juin)
+
+plt.figure(figsize = (8,4))
+
+L_Col_dp = np.where(Comportement_0506[i_rotation_cuve:] == "Col_dp")[0] + i_rotation_cuve
+plt.scatter(Parametres_0506[L_Col_dp][:,0], 
+         Parametres_0506[L_Col_dp][:,1], 
+         label = "Dipôles formés, collision seulement", color = 'tab:olive')
+
+L_Nvdp_pas_dp = np.where(Comportement_0506[i_rotation_cuve:]== "Nvdp_pas_dp")[0] + i_rotation_cuve
+plt.scatter(Parametres_0506[L_Nvdp_pas_dp][:,0], 
+         Parametres_0506[L_Nvdp_pas_dp][:,1], 
+         label = "Dipôles pas formés, collision et nouveaux dipôles", color = 'red')
+
+L_Pas_nvdp_pas_dp = np.where(Comportement_0506[i_rotation_cuve:]== "Pas_nvdp_pas_dp")[0] + i_rotation_cuve
+plt.scatter(Parametres_0506[L_Pas_nvdp_pas_dp][:,0], 
+         Parametres_0506[L_Pas_nvdp_pas_dp][:,1], 
+         label = "Dipôles pas formés, collision et pas de nouveaux dipôles", color = 'magenta')
+
+L_Col_jet = np.where(Comportement_0506[i_rotation_cuve:]== "Col_jet")[0] + i_rotation_cuve
+plt.scatter(Parametres_0506[L_Col_jet][:-2,0], 
+         Parametres_0506[L_Col_jet][:-2,1], 
+         label = "Jet turbulent", color = 'purple')
+## Plot
+
+plt.grid()
+plt.xlabel(r'$Q$ (mL/min)', size = 13)
+plt.ylabel(r'$\delta t$ (s)', size = 13)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
+plt.legend(fontsize = 10)
+plt.title("Résultats au 5 juin pour la cuve tournée dans l'autre sens (problèmes de hauteur ?)")
 plt.show()
