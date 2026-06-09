@@ -86,15 +86,16 @@ disp(L_dipole);
 
 %% Graphique
 
-% Calcul de la distance de la tête au point initial
+% Calcul de la distance à l'origine
 
 T=(time-t0)./framerate; % Intervalle de temps en s
 
+% Calcul des distances depuis le point initial
 X1=X(1,:)-ones(size(X(1,:)))*X(1,1); 
 Y1=Y(1,:)-ones(size(Y(1,:)))*Y(1,1);
 D1=(X1.^2+Y1.^2).^(1/2); %px
 
-% Calcul des vitesses de la tête
+% Calcul des vitesses
 
 V = (D1(2:N) - D1(1:N-1))./(T(2:N) - T(1:N-1)); % px/s
 
@@ -133,7 +134,7 @@ ylabel('Vitesse [cm/s]','Interpreter','latex','FontSize',18)
 hold all
 grid on
 
-% Graphique L_dipole = f(T)
+% Graphique L = f(T)
 
 figure(4)
 clf;
