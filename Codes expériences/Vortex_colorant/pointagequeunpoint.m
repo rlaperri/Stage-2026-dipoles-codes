@@ -1,65 +1,153 @@
-%% load video
+% D'après un code écrit probablement par Christophe BROUZET et/ou Nathan BAGSHAW
+% Par Robin LAPERRIÈRE le 9/06/2026
 
-folder = 'C:\Users\install\Videos\';
-name = 'PIV1';
+%{
+DESCRIPTION:
+A partir d'une certaine video de dipôle, permet de relever la vitesse
+de ce dernier ainsi que sa taille caractéristitque en fonction du temps
 
-vid=VideoReader([folder,name,'.avi']);
+Deux pointages : 
+- Un à la tête du dipôle (ou l'une de ses têtes lors de la collision)
+- Un aux deux extrémités du dipôles afin de quantifier sa largeur
+%}
 
-%%
-t0=17;
+r = 0.02; % En cm/px, conversion en cm (d'après le code Echelle.m)
 
-X=zeros(1,30);
-Y=zeros(1,30);
-k=1;
+%% Chargement vidéo
+
+dossier = '/home/rlqperri/Desktop/Acquisitions/20260605/'; %Dossier
+addpath(dossier);
+nom = 'mov_13'; %nom vidéo (sans l'extension)
+vid=VideoReader([dossier, nom, '.mp4']); %changer l'extension si besoin
+
+%{
+Sur Ubuntu,la fonction VideoReader peut donner des problèmes, vérifier 
+que le module gstreamer est bien mis à jour, updater apt et redémarrer
+la machine : https://stackoverflow.com/questions/33486233/unable-to-initialize-the-video-obtain-properties-videoreader-in-matlab
+%}
+
+%% Scan vidéo
+t0= 1; % Indice de début du scan
+tf = 80; %Indice de fin de scan
+N = 5; % Nombre de pointages
+
+%{
+Si l'analyse se fait sur un intervalle de temps logarithmique
 time=unique(floor(logspace(log10(t0),3,50)));
-for i = 1:length(time)   
+%}
+
+time = unique(floor(linspace(t0, tf, N)));
+
+framerate = 22.30; %En fps
+
+% Listes des coordonnées x et y de la tête aux différents instants
+X = zeros(1,N); Y = zeros(1,N);
+
+% Liste de la largeur du dipôle aux différents instants
+L_dipole = zeros(1,N);
+
+k=1; % indice de la boucle
+for i = 1:length(time)  
+    %{
+    Cette boucle permet de pointer un objet de la vidéo
+    sur l'intervalle de temps choisi
+    %}
+
+    % ouverture vidéo
+    disp(i);
     t=time(i);
     im_rgb=(read(vid,t));
     im=double(rgb2gray(im_rgb));
     
+    % représentation de la frame
     figure(1)
     clf;
     imagesc(im)
     hold all
-    %imagesc(im_rgb(:,:,3))
     colormap('gray')
     axis image
     
-    % pointer
-    
-    [x,y]=ginput(1); %tete
-    
+    % pointage de la tête du dipôle pour le calcul de la vitesse
+    [x,y]=ginput(1);
     plot(x,y,'ko')
     X(:,k)=x;
     Y(:,k)=y;
+
+    % pointage de la largeur du dipôle 
+    [x,y]=ginput(2);
+    plot(x,y,'ko')
+    L_dipole(:,k) = ((x(2)-x(1)).^2 + (y(2)-y(1)).^2).^(1/2);
 
     k=k+1;
 
 end
 
-% %%
-% load(['pointage51mano.mat']);
-% D1=D1/0.02338*0.02258;
+disp(L_dipole);
 
-%%
-T=(time-t0)./8.3;
-X1=X(1,:)-ones(size(X(1,:)))*X(1,1);
+%% Graphique
+
+% Calcul de la distance à l'origine
+
+T=(time-t0)./framerate; % Intervalle de temps en s
+
+% Calcul des distances depuis le point initial
+X1=X(1,:)-ones(size(X(1,:)))*X(1,1); 
 Y1=Y(1,:)-ones(size(Y(1,:)))*Y(1,1);
-D1=(X1.^2+Y1.^2).^(1/2)*0.02338;
+D1=(X1.^2+Y1.^2).^(1/2); %px
 
-figure(19)
+% Calcul des vitesses
+
+V = (D1(2:N) - D1(1:N-1))./(T(2:N) - T(1:N-1)); % px/s
+
+% Graphique D1 = f(T)
+
+figure(2)
 clf;
-plot(T,D1,'ko-')
-set(gca,'YScale','log')
-set(gca,'XScale','log')
+plot(T,r*D1,'ko-')
+
+% Si on souhaite passer en échelle log
+%set(gca,'YScale','log')
+%set(gca,'XScale','log')
+
 set(gca,'FontSize',15)
 xlabel('$t$ [s]','Interpreter','latex','FontSize',18)
 ylabel('Distance [cm]','Interpreter','latex','FontSize',18)
-xlim([0.1 150])
-ylim([0.1 50])
+
 hold all
-%plot(timevec,2.2.*timevec.^1,'k--')
-plot(timevec,950.5.*timevec.^(0.10),'r--')
+
 grid on
-%%
-save('pointage61.mat','X1','Y1','t0','T','D1')
+
+% Graphique V = f(T)
+
+figure(3)
+clf;
+plot(T(1:N-1),r*V,'ko-')
+
+% Si on souhaite passer en échelle log
+%set(gca,'YScale','log')
+%set(gca,'XScale','log')
+
+set(gca,'FontSize',15)
+xlabel('$t$ [s]','Interpreter','latex','FontSize',18)
+ylabel('Vitesse [cm/s]','Interpreter','latex','FontSize',18)
+
+hold all
+grid on
+
+% Graphique L = f(T)
+
+figure(4)
+clf;
+plot(T,r*L_dipole,'ko-')
+
+% Si on souhaite passer en échelle log
+%set(gca,'YScale','log')
+%set(gca,'XScale','log')
+
+set(gca,'FontSize',15)
+xlabel('$t$ [s]','Interpreter','latex','FontSize',18)
+ylabel('Longeur dipôle[cm]','Interpreter','latex','FontSize',18)
+
+hold all
+
+grid on
