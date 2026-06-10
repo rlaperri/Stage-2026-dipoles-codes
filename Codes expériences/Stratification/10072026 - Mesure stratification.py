@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun  8 11:02:04 2026
+Created on Wed Jun 10 16:45:06 2026
 
 @author: Robin LAPERRIÈRE
 
-Stratification au 8 Juin
+Stratification du 10/06/2026
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 # Graduations notées sur le tube en PVC (en cm)
-z_graduation = np.arange(24,0,-1) 
+z_graduation = np.arange(25,0,-1) 
 z_graduation = np.append(z_graduation, 0.4)
 
 # Offset du l'écart cellules-bout de la sonde
@@ -20,10 +20,9 @@ z = z_graduation + 0.9
 
 # Mesures de conductimétrie (mS/cm), incertitudes faibles
 
-sigma = np.array([0.01, 19.18, 19.26, 20.06, 21.29, 23.40, 25.77, 
-                  28.20, 30.69, 33.60, 36.30, 38.68, 41.14, 43.30, 
-                  45.71, 47.96, 49.84, 51.71, 53.29, 54.96, 56.46, 
-                  57.68, 58.59, 59.28, 59.72])
+sigma = np.array([4.40, 7.68, 11.28, 15.51, 18.18, 20.74, 23.42, 26.23, 28.79,
+                  31.33, 33.71, 36.12, 38.64, 40.88, 43.19, 45.26, 47.51, 49.55,
+                  51.58, 53.36, 55.33, 57.08, 58.96, 60.48, 61.66, 62.23])
 
 # Conversion en densité
 
@@ -48,7 +47,7 @@ rho  = calcul_rho(sigma)
 
 # Calcul de la fréquence de Brunt-Väisälä
 
-[a1,a0], cov = np.polyfit(z[3:-3]*1e-2, rho[3:-3], deg = 1, cov = True) 
+[a1,a0], cov = np.polyfit(z[2:-1]*1e-2, rho[2:-1], deg = 1, cov = True) 
 u_a1 = cov[1,1]
 
 '''
@@ -78,7 +77,7 @@ plt.ylabel(r'$z \, (cm)$', size = 13)
 plt.grid()
 
 plt.legend(fontsize = 14)
-plt.title(r"Stratification du 8 Juin 2026, $N \approx {:.2f} \pm {:.2f} $ rad/s".format(N, u_N), 
+plt.title(r"Stratification du 10 Juin 2026, $N \approx {:.2f} \pm {:.2f} $ rad/s".format(N, u_N), 
           size = 16)
 plt.show()
 
