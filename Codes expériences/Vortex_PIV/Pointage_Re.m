@@ -5,16 +5,15 @@
 DESCRIPTION:
 A partir d'une certaine video de dipôle, permet de relever la vitesse
 de ce dernier ainsi que sa taille caractéristitque en fonction du temps
+pour en déduire le nombre de Reynolds
 
 Deux pointages : 
 - Un à la tête du dipôle (ou l'une de ses têtes lors de la collision)
 - Un aux deux extrémités du dipôles afin de quantifier sa largeur
-
-Ce code était utilisé pour se donner un ordre d'idées des paramètres de la
-caméra à utiliser pour la PIV
 %}
 
-r = 0.02; % En cm/px, conversion en cm (d'après le code Echelle.m)
+r = 0.0002; % En m/px, conversion en cm (d'après le code Echelle.m)
+nu = 10.^-6; % Viscosité cinématique de l'eau (en m2/s)
 
 %% Chargement vidéo
 
@@ -87,7 +86,7 @@ end
 
 disp(L_dipole);
 
-%% Graphique
+%% Calculs des grandeurs pertinentes
 
 % Calcul de la distance de la tête au point initial
 
@@ -95,17 +94,23 @@ T=(time-t0)./framerate; % Intervalle de temps en s
 
 X1=X(1,:)-ones(size(X(1,:)))*X(1,1); 
 Y1=Y(1,:)-ones(size(Y(1,:)))*Y(1,1);
-D1=(X1.^2+Y1.^2).^(1/2); %px
+D1=r*(X1.^2+Y1.^2).^(1/2); %m
 
 % Calcul des vitesses de la tête
 
-V = (D1(2:N) - D1(1:N-1))./(T(2:N) - T(1:N-1)); % px/s
+V = r*(D1(2:N) - D1(1:N-1))./(T(2:N) - T(1:N-1)); %m/s
+
+% Calcul du nombre de Reynolds du dipôle
+
+Re = V.*U(1:N-1)/nu;
+
+%% Graphiques 
 
 % Graphique D1 = f(T)
 
 figure(2)
 clf;
-plot(T,r*D1,'ko-')
+plot(T,D1,'ko-')
 
 % Si on souhaite passer en échelle log
 %set(gca,'YScale','log')
@@ -113,7 +118,7 @@ plot(T,r*D1,'ko-')
 
 set(gca,'FontSize',15)
 xlabel('$t$ [s]','Interpreter','latex','FontSize',18)
-ylabel('Distance [cm]','Interpreter','latex','FontSize',18)
+ylabel('Distance [m]','Interpreter','latex','FontSize',18)
 
 hold all
 
@@ -123,7 +128,7 @@ grid on
 
 figure(3)
 clf;
-plot(T(1:N-1),r*V,'ko-')
+plot(T(1:N-1),V,'ko-')
 
 % Si on souhaite passer en échelle log
 %set(gca,'YScale','log')
@@ -131,7 +136,7 @@ plot(T(1:N-1),r*V,'ko-')
 
 set(gca,'FontSize',15)
 xlabel('$t$ [s]','Interpreter','latex','FontSize',18)
-ylabel('Vitesse [cm/s]','Interpreter','latex','FontSize',18)
+ylabel('Vitesse [m/s]','Interpreter','latex','FontSize',18)
 
 hold all
 grid on
@@ -148,8 +153,23 @@ plot(T,r*L_dipole,'ko-')
 
 set(gca,'FontSize',15)
 xlabel('$t$ [s]','Interpreter','latex','FontSize',18)
-ylabel('Longeur dipôle[cm]','Interpreter','latex','FontSize',18)
+ylabel('Longeur dipôle[m]','Interpreter','latex','FontSize',18)
 
 hold all
-
 grid on
+
+figure(5)
+clf;
+plot(T(1:N-1),Re,'ko-')
+
+% Si on souhaite passer en échelle log
+%set(gca,'YScale','log')
+%set(gca,'XScale','log')
+
+set(gca,'FontSize',15)
+xlabel('$t$ [s]','Interpreter','latex','FontSize',18)
+ylabel('Re','Interpreter','latex','FontSize',18)
+
+hold all
+grid on
+
