@@ -7,14 +7,14 @@ de cette dernière et le rapport distance/pixel
 
 %% Chargement image
 
-dossier = '/home/rlqperri/Desktop/Acquisitions/20260605/'; %Dossier
+dossier = '/home/rlqperri/Desktop/Acquisitions/20260610/'; %Dossier
 addpath(dossier);
-nom = 'Echelle_cuvetournee'; % nom de l'image
+nom = 'Echelle'; % nom de l'image
 
-D_reel = 4; %taille de l'échelle, connue (en cm)
+D_reel = 0.04 ; %taille de l'échelle, connue (en m)
 
 image_rgb = imread([dossier, nom, '.png']);
-image = double(rgb2gray(image_rgb));
+image = im2gray(image_rgb);
 
 figure(1)
 clf;
@@ -29,6 +29,6 @@ close all
 
 D_px = ((x(2)-x(1)).^2 + (y(2)-y(1)).^2).^(1/2);
 
-r = D_reel/D_px; % Rapport cm/px
+r = D_reel/D_px; % Rapport m/px
 
 disp(r);
