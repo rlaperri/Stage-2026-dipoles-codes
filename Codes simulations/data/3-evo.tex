@@ -1,0 +1,74 @@
+\documentclass[tikz,dvipsnames,a4paper,10pt]{standalone}
+\usepackage{pgfplots}
+\usepackage{grffile}
+\usepackage{amsmath}
+\usepackage{esint}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns}
+
+ \newcommand{\grille}{
+     \draw[gray!50] (0,0) grid[step=2mm] (current page.north east);
+     \draw[red!50] (0,0) grid[step=1cm] (current page.north east);
+     \draw (0,1) node {1};
+     \draw (0,2) node {2};
+     \draw (2,0) node {2};
+     \draw (3,0) node {3};
+     \draw (4,0) node {4};
+     \draw (5,0) node {5};
+     \draw (6,0) node {6};
+  
+ }
+
+\newcommand{\bnabla}{{\boldsymbol \nabla}} 
+\newcommand{\size}{\scriptsize} 
+
+\newcommand{\bt}{\begin{tabular}{c}} 
+\newcommand{\et}{\end{tabular}} 
+\newcommand{\vs}{\vspace{0.2cm}} 
+\newcommand{\pic}[2]{\includegraphics[width=#1cm,trim=1cm 0cm 0.9cm 0cm,clip]{#2}}
+\graphicspath{{./}}
+\begin{document}
+\newcommand{\ym}{5}
+
+\begin{tikzpicture}[shift={(current page.south west)}]
+
+   \node at (0,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu1.00e-02/1.02.png}};
+   \node at (2,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu1.00e-02/0.82.png}};
+   \node at (4,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu1.00e-02/0.61.png}};
+   \node at (6,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu1.00e-02/0.41.png}};
+   \node at (8,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu1.00e-02/0.20.png}};
+   \node at (10,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu1.00e-02/0.00.png}};
+   \node at (10,-1.5){ $t=0$};
+   \node at (0,-1.5){ $t=1$};
+   \node at (10,2){ \small $\nu=10^{-2},\eta=10^2$};
+ 
+   \begin{scope}[xshift=0,yshift=-4cm]
+   \node at (0,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu2.00e-03/1.02.png}};
+   \node at (2,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu2.00e-03/0.82.png}};
+   \node at (4,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu2.00e-03/0.61.png}};
+   \node at (6,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu2.00e-03/0.41.png}};
+   \node at (8,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu2.00e-03/0.20.png}};
+   \node at (10,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+02_nu2.00e-03/0.00.png}};
+   \node at (10,-1.5){ $t=0$};
+   \node at (0,-1.5){ $t=1$};
+  \node at (10,2){ $\nu=2.10^{-3},\eta=10^2$};
+   \end{scope}
+
+   \begin{scope}[xshift=0,yshift=-8cm]
+   \node at (0,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+03_nu2.00e-03/1.02.png}};
+   \node at (2,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+03_nu2.00e-03/0.82.png}};
+   \node at (4,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+03_nu2.00e-03/0.61.png}};
+   \node at (6,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+03_nu2.00e-03/0.41.png}};
+   \node at (8,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+03_nu2.00e-03/0.20.png}};
+   \node at (10,0){  \includegraphics[height=4.5cm,trim=9cm 0cm 9cm 2.5cm,clip]{512-eta1.00e+03_nu2.00e-03/0.00.png}};
+   \node at (10,-1.5){ $t=0$};
+   \node at (0,-1.5){ $t=1$};
+  \node at (10,2){ $\nu=2.10^{-3},\eta=10^3$};
+   \end{scope}
+
+
+\end{tikzpicture}
+\end{document}
+
+
