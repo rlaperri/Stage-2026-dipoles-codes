@@ -3,5 +3,5 @@
 *.gif
 *.png
 *.avi
-/Codes simulations/data
+Codes simulations/data
 **/__pycache__
