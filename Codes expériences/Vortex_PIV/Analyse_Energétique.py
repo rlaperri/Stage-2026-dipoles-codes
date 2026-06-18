@@ -268,7 +268,7 @@ def D_minmax(dossier, nom, framerate):
     plt.plot(t_array, D_maxmin)
     plt.title(dossier)
     # Rajouter des zéros en début de ficheir
-    plt.savefig('{}/Dminmax.png'.format(nom), dpi=100)
+    plt.savefig('{}/Dminmax.svg'.format(nom), dpi=100)
     plt.show()
 
     return None
@@ -366,6 +366,27 @@ def pointage_Re(dossier, n, framerate):
 
     return Re
 
+def calcul_Re(dossier, n, framerate):
+    
+    if n==None: # Cas sans collision
+        return None
+    
+    # Calcul de la vitesse caractéristique
+    
+    Ux = extraction_Ux(dossier, n, framerate)
+    Uy = extraction_Uy(dossier, n, framerate)
+    U_norme = np.sqrt(np.square(Ux)+np.square(Uy))
+    U = np.max(U_norme)
+
+    # Calcul de la longueur caractéristique
+
+    w_n = extraction_vorticite(dossier, n, framerate)
+    i_max, j_max = np.where(w_n == np.max(w_n))
+    i_min, j_min = np.where(w_n == np.min(w_n))
+    D_maxmin = r*np.sqrt(np.square(i_max-i_min) + np.square(j_max-j_min))[0]
+        
+    return (U*D_maxmin)/nu
+
 def Animation_Ec_w_Z(dossier, nom, Q, dt, framerate):
     '''
     '''
@@ -427,7 +448,7 @@ def Animation_Ec_w_Z(dossier, nom, Q, dt, framerate):
 
         fig.tight_layout()
         # Rajouter des zéros en début de ficheir
-        plt.savefig('{}/im{}.png'.format(nom,
+        plt.savefig('{}/im{}.svg'.format(nom,
                     str(n).zfill(data_name_length)), dpi=100)
         plt.show()
 
@@ -489,7 +510,7 @@ def verification_2D(dossier, nom, Q, dt, framerate):
     
     fig.tight_layout()
     # Rajouter des zéros en début de ficheir
-    plt.savefig('{}/dtE_Z.png'.format(nom), dpi=200)
+    plt.savefig('{}/dtE_Z.svg'.format(nom), dpi=200)
     plt.show()
 
     return None
@@ -526,7 +547,7 @@ def E_Z_log(dossier, nom, Q, dt, framerate, i_min_debut, i_max_debut, i_min_fin)
     aE_fin,bE_fin = np.polyfit(t_log_fin,E_log_fin,1)
     aZ_fin,bZ_fin = np.polyfit(t_log_fin,Z_log_fin,1)
         
-    fig, axes = plt.subplots(1,3, figsize=(18, 6))
+    fig, axes = plt.subplots(1,3, figsize=(24, 6))
     
     axes[0].set_xscale('log')
     axes[0].set_yscale('log')
@@ -561,7 +582,7 @@ def E_Z_log(dossier, nom, Q, dt, framerate, i_min_debut, i_max_debut, i_min_fin)
     
     fig.tight_layout()
     # Rajouter des zéros en début de ficheir
-    plt.savefig('{}/E_Z_log.png'.format(nom), dpi=200)
+    plt.savefig('{}/E_Z_log.svg'.format(nom), dpi=200)
     plt.show()
 
     return None
@@ -590,9 +611,203 @@ if __name__ == "__main__":
     r = r*8
 
     # Traitement des expériences du 10 juin
-
+    
+    Q_liste = np.array([10,20,30,40])
+    dt_liste = np.array([1,3,5])
     Q_1006 = np.array([10, 20, 20, 40, 40, 30, 30, 30, 40, 20, 10, 10])
     dt_1006 = np.array([5, 5, 3, 1, 3, 1, 3, 5, 5, 1, 1, 3])
+    
+    # Max de Z et E
+    n_max_1006 = np.array([3, 7, 6, 7, 6, 6, 7, 7, 9, 5, 8, 6]) # Frame des max de Z et E
+    
+    # Collision ESTIMÉE du dipôle
+    n_col_1006 = np.array([3, 7, 7, 11, 6, 11, 7, 7, 8, 15, None, 5])
+    Re_liste_col = np.array([135, 167, 204, 244, 485, 139, 280, 535, 650, 89, 31, 136])
+    
+    ReI = Re_Injection(Q_1006)
+    
+    # Loi d'échelle sur Rev
+    
+    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+    axes[0].set_xlabel(r'$dt$ (en $s$)', fontsize=14)
+    axes[0].set_ylabel(r'$Re_V$', fontsize=14)
+    axes[1].set_xlabel(r'$Q$ (en $mL/min$)', fontsize=14)
+    axes[1].set_ylabel(r'$Re_V$', fontsize=14)
+    
+    for Q in Q_liste:
+        i_Q_liste = np.sort(np.where(Q_1006 == Q))
+        axes[0].scatter(dt_1006[i_Q_liste], Re_liste_col[i_Q_liste], 
+                     label = r'$Q = {} mL/min$'.format(Q))
+        axes[0].plot(dt_1006[i_Q_liste], Re_liste_col[i_Q_liste],
+                     alpha = 0.4, linestyle = 'dashed')
+        axes[0].legend()
+        
+    
+    for dt in dt_liste:        
+        
+        i_dt_liste = np.sort(np.where(dt_1006 == dt))
+        axes[1].scatter(Q_1006[i_dt_liste], Re_liste_col[i_dt_liste],
+                     label = r'$\delta t = {} s$'.format(dt))
+        axes[1].plot(Q_1006[i_dt_liste], Re_liste_col[i_dt_liste],
+                     alpha = 0.4)
+        axes[1].legend()
+        
+    axes[1].grid()
+    axes[0].grid()
+    plt.savefig('10_06/ReV_dt_Q.svg', dpi = 200)
+    plt.show()
+    
+    '''
+    # Calcul des nombres de Reynolds au max de Z et E
+    
+    Re_liste = []
+    
+    for i in range(12):
+
+        if i == 0:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_0/TR_PIV_MPd(4x32x32_75%ov)/SlidAvg L=10/"
+
+        else:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_{}/TR_PIV_MPd(4x32x32_75%ov)/PostProc/SlidAvg L=10/".format(i)
+        
+        framerate = framerate_1006[i]
+        n = int(n_max_1006[i])
+        Re_liste.append(calcul_Re(dossier, n, framerate))
+        
+    Re_sort = np.sort(Re_liste)
+    
+    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+    axes[0].set_xlabel(r'$t$ (en $s$)', fontsize=14)
+    axes[0].set_ylabel(r'$E_{tot}$ (en $m^2 / s^2$)', fontsize=14)
+    axes[1].set_xlabel(r'$t$ (en $s$)', fontsize=14)
+    axes[1].set_ylabel(r'$Z_{tot}$ (en $s^{-2}$)', fontsize=14)
+
+    colormap = plt.cm.coolwarm
+    axes[0].set_prop_cycle(plt.cycler(
+        'color', plt.cm.jet(np.linspace(0, 1, 12))))
+    axes[1].set_prop_cycle(plt.cycler(
+        'color', plt.cm.jet(np.linspace(0, 1, 12))))
+    
+
+    for Re in Re_sort:
+
+        i = np.where(Re_liste == Re)[0][0]
+        print(Re)
+        print(i)
+
+        Q = Q_1006[i]  # débit, en mL/min
+        dt = dt_1006[i]  # temps d'injection, en s
+
+        framerate = framerate_1006[i]
+
+        if i == 0:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_0/TR_PIV_MPd(4x32x32_75%ov)/SlidAvg L=10/"
+
+        else:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_{}/TR_PIV_MPd(4x32x32_75%ov)/PostProc/SlidAvg L=10/".format(
+                i)
+
+        Z = np.array([])
+        E = np.array([])
+
+        N = N_frames(dossier)
+        n_array = np.arange(0, N)
+        t_array = n_array/framerate
+
+        for n in n_array:
+            E = np.append(E, Ec_tot(dossier, int(n), framerate))
+            Z = np.append(Z, Z_tot(dossier, int(n), framerate))
+
+        axes[0].plot(
+            t_array, E, label=r'$Re_V \approx {:.0f}, Re_I \approx {:.0f}$'.format(Re, ReI[i]))
+        axes[1].plot(
+            t_array, Z, label=r'$Re_V \approx {:.0f}, Re_I \approx {:.0f}$'.format(Re, ReI[i]))
+
+    plt.suptitle(r"Mesures du 10/06, $Re_V$ : calcul systématique avec Dminmax pour Z et E au max"+ 
+              "\n" +"$Re_I$ : Reynolds d'Injection")
+    plt.legend()
+    plt.savefig('10_06/Re_systematique_ZEmax.svg', dpi = 200)
+    plt.show()
+    #'''
+    
+    '''
+    # Calcul des nombres de Reynolds à la collision
+    
+    Re_liste = []
+    
+    for i in range(12):
+
+        if i == 0:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_0/TR_PIV_MPd(4x32x32_75%ov)/SlidAvg L=10/"
+
+        else:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_{}/TR_PIV_MPd(4x32x32_75%ov)/PostProc/SlidAvg L=10/".format(i)
+        
+        framerate = framerate_1006[i]
+        
+        if n_col_1006[i]!=None : # S'il y a collision
+            n = int(n_col_1006[i])
+        Re_liste.append(calcul_Re(dossier, n, framerate))
+    
+    print(Re_liste)
+        
+    Re_sort = np.sort(Re_liste)
+    
+    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+    axes[0].set_xlabel(r'$t$ (en $s$)', fontsize=14)
+    axes[0].set_ylabel(r'$E_{tot}$ (en $m^2 / s^2$)', fontsize=14)
+    axes[1].set_xlabel(r'$t$ (en $s$)', fontsize=14)
+    axes[1].set_ylabel(r'$Z_{tot}$ (en $s^{-2}$)', fontsize=14)
+
+    colormap = plt.cm.coolwarm
+    axes[0].set_prop_cycle(plt.cycler(
+        'color', plt.cm.jet(np.linspace(0, 1, 12))))
+    axes[1].set_prop_cycle(plt.cycler(
+        'color', plt.cm.jet(np.linspace(0, 1, 12))))
+    
+
+    for Re in Re_sort:
+
+        i = np.where(Re_liste == Re)[0][0]
+        print(Re)
+        print(i)
+
+        Q = Q_1006[i]  # débit, en mL/min
+        dt = dt_1006[i]  # temps d'injection, en s
+
+        framerate = framerate_1006[i]
+
+        if i == 0:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_0/TR_PIV_MPd(4x32x32_75%ov)/SlidAvg L=10/"
+
+        else:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_{}/TR_PIV_MPd(4x32x32_75%ov)/PostProc/SlidAvg L=10/".format(
+                i)
+
+        Z = np.array([])
+        E = np.array([])
+
+        N = N_frames(dossier)
+        n_array = np.arange(0, N)
+        t_array = n_array/framerate
+
+        for n in n_array:
+            E = np.append(E, Ec_tot(dossier, int(n), framerate))
+            Z = np.append(Z, Z_tot(dossier, int(n), framerate))
+
+        axes[0].plot(
+            t_array, E, label=r'$Re_V \approx {:.0f}, Re_I \approx {:.0f}$'.format(Re, ReI[i]))
+        axes[1].plot(
+            t_array, Z, label=r'$Re_V \approx {:.0f}, Re_I \approx {:.0f}$'.format(Re, ReI[i]))
+
+    plt.suptitle(r"Mesures du 10/06, $Re_V$ : calcul systématique avec Dminmax à la collision"+ 
+              "\n" +"$Re_I$ : Reynolds d'Injection")
+    plt.legend()
+    plt.savefig('10_06/Re_systematique_collision.svg', dpi = 200)
+    plt.show()
+    '''
+    
+    # Calcul des exposants pour loi de puissance
     
     i_debut_liste = np.array([[1,3],[1,3],[1,4],[2,6],[1,5],[1,4],[2,6],[1,6],
                               [3,8],[2,5],[6,7],[2,5]])
@@ -617,6 +832,8 @@ if __name__ == "__main__":
         E_Z_log(dossier, nom, Q, dt, framerate, i_min_debut, i_max_debut, i_min_fin)
     
     '''
+    Verification 2D dtE = -2nuZ 
+    
     # frame à Z et E max
     n_max_1006 = np.array([3, 7, 6, 7, 6, 6, 7, 7, 9, 5, 8, 6])
     
@@ -634,7 +851,11 @@ if __name__ == "__main__":
         nom = '10_06/mov_{}'.format(i)
         verification_2D(dossier, nom, Q, dt, framerate)
     '''
+    
     '''
+    Essai loi d'Échelle de Nathan
+    
+    n_max_1006 = np.array([3, 7, 6, 7, 6, 6, 7, 7, 9, 5, 8, 6])
     ReI = Re_Injection(Q_1006)
     Re_liste = []
     
@@ -648,7 +869,7 @@ if __name__ == "__main__":
         
         framerate = framerate_1006[i]
         n = int(n_max_1006[i])
-        Re_liste.append(pointage_Re(dossier, n))
+        Re_liste.append(pointage_Re(dossier, n, framerate))
         
     Re_sort = np.sort(Re_liste)
     
