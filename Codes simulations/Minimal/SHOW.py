@@ -1,5 +1,4 @@
-#!/home/sthalabard/Software/anaconda3/envs/dedalus3/bin/python3
-
+#!/home/rlqperri/miniconda3/envs/dedalus3/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on 2024/04/30

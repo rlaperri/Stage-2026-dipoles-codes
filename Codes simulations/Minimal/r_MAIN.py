@@ -1,6 +1,5 @@
-#!/home/sthalabard/miniforge3/envs/dedalus3/bin/python3
-#!/home/sthalabard/Software/anaconda3/envs/dedalus3/bin/python3
-# -*- coding: utf-8 -*-
+#!/home/rlqperri/miniconda3/envs/dedalus3/bin/python3
+# -*- coding: utf-8 -*
 """
 Created on Sun Jun  2 12:13:38 2024
 Gluing Script to launch parallel dedalus runs

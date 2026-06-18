@@ -1,4 +1,4 @@
-#!/home/sthalabard/anaconda3/bin/python3
+#!/home/rlqperri/miniconda3/envs/dedalus3/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Sep 12 21:09:17 2022

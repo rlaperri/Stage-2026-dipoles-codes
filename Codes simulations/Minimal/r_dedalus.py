@@ -1,5 +1,4 @@
-#!/home/sthalabard/Software/anaconda3/envs/dedalus3/bin/python3
-#!/home/sthalabard/miniforge3/envs/dedalus3/bin/python3
+#!/home/rlqperri/miniconda3/envs/dedalus3/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on 2024/05/14
@@ -23,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%% Load parameters and initial condition
+####################### https://fr.wikipedia.org/wiki/26_(nombre)###########
 paramfile='param00.dill' ##### THIS NEEDS TO BE LINE 26!!!!
 param=load_dill(paramfile)
 param.timestepper= d3.RK222
