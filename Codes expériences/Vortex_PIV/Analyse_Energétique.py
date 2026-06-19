@@ -17,6 +17,8 @@ import matplotlib
 import matplotlib.pyplot as plt  # Graphiques
 import numpy as np  # Calculs
 import os  # Gestion des fichiers
+from scipy.integrate import cumulative_trapezoid # Méthode d'intégration
+from scipy.optimize import curve_fit
 from scipy.ndimage import gaussian_filter  # Filtrage spatial gaussien
 
 # Fonctions
@@ -586,6 +588,78 @@ def E_Z_log(dossier, nom, Q, dt, framerate, i_min_debut, i_max_debut, i_min_fin)
     plt.show()
 
     return None
+
+def calcul_psi(dossier, n, framerate):
+    
+    '''
+    '''
+    
+    Ux = extraction_Ux(dossier, n, framerate) # u
+    Uy = extraction_Ux(dossier, n, framerate) # v
+    
+    # Calcul fonction de courant psi
+    
+    Ny, Nx = np.shape(Ux)
+    x_array = r*np.arange(0,Nx,1)
+    y_array = r*np.arange(0,Ny,1)
+    X,Y = np.meshgrid(x_array,np.flip(y_array))
+    
+    psi = (-cumulative_trapezoid(y = Uy, x = X, axis = 1, initial = 0)
+           + cumulative_trapezoid(y = Ux, x = Y, axis = 0, initial = 0))
+    
+    return psi
+
+'''
+Ne marche pas pour le moment
+
+def coeffs_ab(dossier, n, framerate):
+    
+    w = extraction_vorticite(dossier, n, framerate) # Vorticité
+    
+    psi = calcul_psi(dossier, n, framerate)[:-1,:-1] # Fonction de courant
+    
+    indices_max = np.where(w == np.max(w))
+    indices_min = np.where(w == np.min(w))
+    
+    i_max, j_max = indices_max[0][0], indices_max[1][0]
+    i_min, j_min = indices_min[0][0], indices_min[1][0]
+    
+    i_mil = int((i_max+i_min)/2)
+    j_mil = int((j_max+j_min)/2)
+    d = np.sqrt(np.square(i_max-i_min) + np.square(j_max-j_min))
+        
+    Ny, Nx = np.shape(w)
+    y_array = r*np.arange(0,Ny,1)
+    
+    def fit_psi_w(psi,a,b):
+        return a*psi + b*np.power(psi,3)
+    
+    i_start = int(i_mil - 0.7*d)
+    i_stop = int(i_mil + 0.7*d)
+    
+    #i_start = 0
+    #i_stop = None
+    
+    y_sur_d = np.linspace(-0.7, 0.7, i_stop-i_start)
+    psi_norm = psi[i_start:i_stop,j_mil]/np.linalg.norm(psi[i_start:i_stop,j_mil])
+    w_norm = w[i_start:i_stop,j_mil]/np.linalg.norm(w[i_start:i_stop,j_mil])
+        
+    popt,pcov = curve_fit(fit_psi_w, psi_norm,w_norm)
+    a,b = popt
+    
+    print("a = {}, b = {}".format(a,b))
+        
+
+    plt.plot(w_norme[i_start:i_stop,j_mil])
+    plt.plot(psi_norme[i_start:i_stop,j_mil])
+    plt.show()
+    
+    #plt.plot(fit_psi_w(psi_norme[:,j_mil], a, b))
+    plt.scatter(psi_norme[i_start:i_stop,j_mil], psi_norme[i_start:i_stop,j_mil])
+    plt.show()
+    
+    return y_sur_d,w_norm,psi_norm
+'''
     
 
 # Lancement du programme
@@ -626,6 +700,28 @@ if __name__ == "__main__":
     
     ReI = Re_Injection(Q_1006)
     
+    '''
+    # Calcul coeffs a et b, ne marche pas pour le moment
+    
+    for i in range(12):
+        
+        if i == 0:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_0/TR_PIV_MPd(4x32x32_75%ov)/SlidAvg L=10/"
+
+        else:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_{}/TR_PIV_MPd(4x32x32_75%ov)/PostProc/SlidAvg L=10/".format(i)
+        
+        
+        if n_col_1006[i] !=None : 
+            
+            n = int(n_col_1006[i])
+            framerate = framerate_1006[i]
+            x,w,psi = coeffs_ab(dossier, n, framerate)
+            plt.scatter(x,psi)
+            
+    plt.show()
+    '''
+    '''
     # Loi d'échelle sur Rev
     
     fig, axes = plt.subplots(1, 2, figsize=(12, 6))
@@ -656,6 +752,7 @@ if __name__ == "__main__":
     axes[0].grid()
     plt.savefig('10_06/ReV_dt_Q.svg', dpi = 200)
     plt.show()
+    '''
     
     '''
     # Calcul des nombres de Reynolds au max de Z et E
@@ -807,6 +904,7 @@ if __name__ == "__main__":
     plt.show()
     '''
     
+    '''
     # Calcul des exposants pour loi de puissance
     
     i_debut_liste = np.array([[1,3],[1,3],[1,4],[2,6],[1,5],[1,4],[2,6],[1,6],
@@ -830,7 +928,7 @@ if __name__ == "__main__":
         i_max_debut = i_debut_liste[i][1]
         i_min_fin = i_fin_liste[i]
         E_Z_log(dossier, nom, Q, dt, framerate, i_min_debut, i_max_debut, i_min_fin)
-    
+    '''
     '''
     Verification 2D dtE = -2nuZ 
     
