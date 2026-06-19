@@ -589,6 +589,40 @@ def E_Z_log(dossier, nom, Q, dt, framerate, i_min_debut, i_max_debut, i_min_fin)
 
     return None
 
+def Exposants(dossier, framerate, i_min_debut, i_max_debut, i_min_fin):
+
+    if not os.path.exists(nom):
+        os.makedirs(nom)
+    
+    N = N_frames(dossier)
+    n_array = np.arange(0, N)
+    t_array = n_array/framerate
+    
+    
+    t_log_debut = np.log(t_array[i_min_debut:i_max_debut+1])
+    t_log_fin = np.log(t_array[i_min_fin:])
+    
+    Z = np.array([])
+    E = np.array([])
+    
+    for n in n_array:
+        E = np.append(E, Ec_tot(dossier, int(n), framerate))
+        Z = np.append(Z, Z_tot(dossier, int(n), framerate))
+        
+    E_log_debut = np.log(E[i_min_debut:i_max_debut+1])
+    Z_log_debut = np.log(Z[i_min_debut:i_max_debut+1])
+    
+    E_log_fin = np.log(E[i_min_fin:])
+    Z_log_fin = np.log(Z[i_min_fin:])
+    
+    aE_debut,bE_debut = np.polyfit(t_log_debut,E_log_debut,1)
+    aZ_debut,bZ_debut = np.polyfit(t_log_debut,Z_log_debut,1)
+    
+    aE_fin,bE_fin = np.polyfit(t_log_fin,E_log_fin,1)
+    aZ_fin,bZ_fin = np.polyfit(t_log_fin,Z_log_fin,1)
+
+    return aE_debut, aE_fin, aZ_debut, aZ_fin
+
 def calcul_psi(dossier, n, framerate):
     
     '''
@@ -609,12 +643,12 @@ def calcul_psi(dossier, n, framerate):
     
     return psi
 
-'''
-Ne marche pas pour le moment
+# Ne marche pas pour le moment
 
 def coeffs_ab(dossier, n, framerate):
     
     w = extraction_vorticite(dossier, n, framerate) # Vorticité
+    Ny,Nx = np.shape(w)
     
     psi = calcul_psi(dossier, n, framerate)[:-1,:-1] # Fonction de courant
     
@@ -624,42 +658,40 @@ def coeffs_ab(dossier, n, framerate):
     i_max, j_max = indices_max[0][0], indices_max[1][0]
     i_min, j_min = indices_min[0][0], indices_min[1][0]
     
+    # On fait la droite
+    
+    i_liste = [i_min]
+    m = (i_max-i_min)/(j_max-j_min)
+    
+    i,j = i_min,j_min
+    
+    while i!=i_max:
+        print(i)
+        j+=1
+        i = int(i_min-m*(j-j_min))
+        if i!=i_liste[-1]:
+            print(i_liste)
+            i_liste.append(int(i))
+        
     i_mil = int((i_max+i_min)/2)
     j_mil = int((j_max+j_min)/2)
     d = np.sqrt(np.square(i_max-i_min) + np.square(j_max-j_min))
         
     Ny, Nx = np.shape(w)
-    y_array = r*np.arange(0,Ny,1)
     
     def fit_psi_w(psi,a,b):
         return a*psi + b*np.power(psi,3)
     
-    i_start = int(i_mil - 0.7*d)
-    i_stop = int(i_mil + 0.7*d)
-    
-    #i_start = 0
-    #i_stop = None
-    
-    y_sur_d = np.linspace(-0.7, 0.7, i_stop-i_start)
-    psi_norm = psi[i_start:i_stop,j_mil]/np.linalg.norm(psi[i_start:i_stop,j_mil])
-    w_norm = w[i_start:i_stop,j_mil]/np.linalg.norm(w[i_start:i_stop,j_mil])
+    y_sur_d = (np.arange(0,Ny,1)-i_mil)/d
+    psi_norm = psi[i_liste,j_mil]/np.linalg.norm(psi[:,j_mil])
+    w_norm = w[i_liste,j_mil]/np.linalg.norm(w[:,j_mil])
         
     popt,pcov = curve_fit(fit_psi_w, psi_norm,w_norm)
     a,b = popt
     
     print("a = {}, b = {}".format(a,b))
-        
-
-    plt.plot(w_norme[i_start:i_stop,j_mil])
-    plt.plot(psi_norme[i_start:i_stop,j_mil])
-    plt.show()
-    
-    #plt.plot(fit_psi_w(psi_norme[:,j_mil], a, b))
-    plt.scatter(psi_norme[i_start:i_stop,j_mil], psi_norme[i_start:i_stop,j_mil])
-    plt.show()
     
     return y_sur_d,w_norm,psi_norm
-'''
     
 
 # Lancement du programme
@@ -700,6 +732,96 @@ if __name__ == "__main__":
     
     ReI = Re_Injection(Q_1006)
     
+    # Variation exposants en fonction du nombre de Reynolds
+    
+    i_debut_liste = np.array([[1,3],[1,3],[1,4],[2,6],[1,5],[1,4],[2,6],[1,6],
+                              [3,8],[2,5],[6,7],[2,5]])
+    i_fin_liste = np.array([5,15,15,15,15,15,15,15,15,15,15,15])
+    
+    aEd_liste, aEf_liste, aZd_liste, aZf_liste = [], [], [], []
+    
+    for i in range(12):
+
+        if i == 0:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_0/TR_PIV_MPd(4x32x32_75%ov)/SlidAvg L=10/"
+
+        else:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_{}/TR_PIV_MPd(4x32x32_75%ov)/PostProc/SlidAvg L=10/".format(i)
+        
+        framerate = framerate_1006[i]
+        nom = '10_06/mov_{}'.format(i)
+        
+        i_min_debut = i_debut_liste[i][0]
+        i_max_debut = i_debut_liste[i][1]
+        i_min_fin = i_fin_liste[i]
+        aEd, aEf, aZd, aZf = Exposants(dossier, framerate, i_min_debut, i_max_debut, i_min_fin)
+        aEd_liste.append(aEd)
+        aEf_liste.append(aEf)
+        aZd_liste.append(aZd)
+        aZf_liste.append(aZf)
+        
+    #plt.scatter(Re_liste_col,aEd_liste, label = r'Exposants de croissance sur $E$')
+    plt.scatter(Re_liste_col,aEf_liste, label = r'Exposants de décroissance sur $E$')
+    plt.xlabel(r'$Re_V$ à la collision')
+    plt.legend()
+    plt.savefig(r'exposants_decroissance_Re_E.png', dpi = 300)
+    plt.show()
+    
+    #plt.scatter(Re_liste_col,aZd_liste, label = r'Exposants de croissance sur $Z$')
+    plt.scatter(Re_liste_col,aZf_liste, label = r'Exposants de décroissance sur $Z$')
+    plt.xlabel(r'$Re_V$ à la collision')
+    plt.legend()
+    plt.savefig(r'exposants_decroissance_Re_Z.png', dpi = 300)
+    plt.show()
+        
+    
+    '''
+    # Mesure delta E et Z 5 sec après et avant comme Farge
+    Delta_E, Delta_Z = np.array([]), np.array([])
+    
+    for i in range(12):
+        
+        if i == 0:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_0/TR_PIV_MPd(4x32x32_75%ov)/SlidAvg L=10/"
+
+        else:
+            dossier = "/home/rlqperri/Desktop/Acquisitions/20260610/mov_{}/TR_PIV_MPd(4x32x32_75%ov)/PostProc/SlidAvg L=10/".format(i)
+        
+        n = n_col_1006[i]
+        framerate = framerate_1006[i]
+        
+        dt = 20
+        
+        if n!=None:
+            dn = int(dt*framerate)
+            
+            if dn == 0:
+                print("dt trop petit")
+                break
+            
+            n = int(n)
+            Delta_E = np.append(Delta_E, 
+                                Ec_tot(dossier, n, framerate) - Ec_tot(dossier, n+dn, framerate))
+            Delta_Z = np.append(Delta_Z, 
+                                Z_tot(dossier, n, framerate) - Z_tot(dossier, n+dn, framerate))
+                
+        else:
+            Delta_E = np.append(Delta_E, None)
+            Delta_Z  = np.append(Delta_Z, None)
+        
+    plt.scatter(Re_liste_col, Delta_E)
+    plt.xlabel(r'$Re_V$ à la collision')
+    plt.ylabel(r'$E(t_{col}) - E(t_{col} + 20s)$ (en $m^2/s^2$)')
+    plt.savefig("DE_Rev.png", dpi = 200)
+    plt.show()
+    
+    plt.scatter(Re_liste_col, Delta_Z)
+    plt.xlabel(r'$Re_V$ à la collision')
+    plt.ylabel(r'$Z(t_{col}) - Z(t_{col} + 20s)$ (en $s^{-2})$')
+    plt.savefig("DZ_Rev.png", dpi = 200)
+    plt.show()
+    '''
+    
     '''
     # Calcul coeffs a et b, ne marche pas pour le moment
     
@@ -717,10 +839,11 @@ if __name__ == "__main__":
             n = int(n_col_1006[i])
             framerate = framerate_1006[i]
             x,w,psi = coeffs_ab(dossier, n, framerate)
-            plt.scatter(x,psi)
+            plt.scatter(x,psi, s = 0.1)
             
     plt.show()
     '''
+
     '''
     # Loi d'échelle sur Rev
     
